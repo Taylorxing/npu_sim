@@ -1,0 +1,25 @@
+
+GlobalPlanner:                                  # Also see: http://wiki.ros.org/global_planner
+  use_dijkstra: false          # 如果为ture，则使用dijkstra算法。 否则使用A *算法
+  use_quadratic: true         # 二次逼近
+  use_grid_path: false        # 如果为true，沿着栅格边界创建路径。 否则，使用梯度下降的方法。
+  old_navfn_behavior: True    # 要global_planner准确反映navfn的行为，设置为true。fause
+  visualize_potential: false  # 指定是否通过可视化PointCloud2计算的潜在区域
+
+  allow_unknown: false        # 是否允许规划器规划穿过未知区域的路径 true
+                                                #Needs to have track_unknown_space: true in the obstacle / voxel layer (in costmap_commons_param) to work
+  planner_window_x: 20.0                         # default 0.0 20
+  planner_window_y: 20.0                         # default 0.0 20
+  default_tolerance: 0.1                        # 路径规划器目标点的公差范围
+  
+  publish_scale: 100                            # Scale by which the published potential gets multiplied, default 100
+  planner_costmap_publish_frequency: 20.0        # default 0.0
+  
+  lethal_cost: 253            # 致命代价值,默认设置为253
+  neutral_cost: 50 #66            # 中等代价值,默认设置是50
+  cost_factor: 3.0 #0.55      # 代价地图与每个代价值相乘的因子3.0
+  publish_potential: True     # 是否发布costmap的势函数
+  orientation_mode: 0         # 如何设置每个点的方向（None = 0,Forward = 1,Interpolate = 2,
+                                # ForwardThenInterpolate = 3,Backward = 4,Leftward = 5,Rightward = 6）
+  orientation_window_size: 1  # 根据orientation_mode指定的位置积分得到使用窗口的方向.默认值1
+  

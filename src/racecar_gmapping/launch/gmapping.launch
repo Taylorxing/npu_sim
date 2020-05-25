@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="use_rviz" default="true" />
+  <!--<arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" />-->
+  <arg name="scan_topic" default="scan" />
+  <arg name="base_frame" default="base_link" /> 
+  <!--base_link_joint-->
+  <arg name="map_frame" default="map" />
+  <!--link-->
+  <!--<arg name="laser_frame" default="laser" />-->
+  
+  <!--<include file="$(find art_racecar)/launch/includes/rf2o.launch.xml"/>
+  <include file="$(find racecar_gazebo)/scripts/gazebo_odometry.py"/>-->
+    <!-- Robot_Localization -->
+  <!--<node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+    <rosparam command="load" file="$(find art_racecar)/param/ekf_params.yaml"/>
+    </node>-->
+
+  <!--hokuyo_joint-->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="odom_frame" value="odom"/>
+    <param name="base_frame" value="base_link"/>
+    <param name="map_frame" value="$(arg map_frame)"/>
+    <!--<param name="laser_frame" value="$(arg laser_frame)"/>-->
+<!--ground_plane::link', 'racecar::base_link-->
+<!--ground_plane, racecar]-->
+    <!-- Process 1 out of every this many scans (set it to a higher number to skip more scans)  -->
+    <!--在所有如此多的扫描中处理1（将其设置为更高的数字以跳过更多扫描）-->
+    <param name="throttle_scans" value="1"/>
+    <param name="map_update_interval" value="10.0"/> <!-- default: 5.0 -->
+
+    <!-- The maximum usable range of the laser. A beam is cropped to this value.  -->
+    <!--激光的最大可用范围。 光束被裁剪为该值。-->
+    <param name="maxUrange" value="10.0"/><!-- default: 5.0 -->
+
+    <!-- The maximum range of the sensor. If regions with no obstacles within the range of the sensor should appear as free space in the map, set maxUrange < maximum range of the real sensor <= maxRange -->
+    <!--传感器的最大范围。 如果传感器范围内无障碍物的区域应显示为地图上的自由空间，请设置maxUrange <实际传感器的最大范围<= maxRange-->
+    <param name="maxRange" value="10.0"/>
+
+    <param name="sigma" value="0.05"/><!-- default:0.05 -->
+    <param name="kernelSize" value="1"/>
+    <param name="lstep" value="0.05"/>
+    <param name="astep" value="0.05"/>
+    <param name="iterations" value="5"/>
+    <param name="lsigma" value="0.075"/>
+    <param name="ogain" value="3.0"/>
+    <param name="minimumScore" value="0.0"/>
+    <!-- Number of beams to skip in each scan. -->
+    <!--每次扫描要跳过的光束数-->
+    <param name="lskip" value="0"/>
+
+    <param name="srr" value="0.01"/>
+    <param name="srt" value="0.75"/><!-- default: 0.02 -->
+    <param name="str" value="0.01"/>
+    <param name="stt" value="0.75"/><!-- default: 0.02 -->
+
+    <!-- Process a scan each time the robot translates this far  -->
+    <!--每次机器人平移此距离时都要进行扫描-->
+    <param name="linearUpdate" value="0.1"/>
+
+    <!-- Process a scan each time the robot rotates this far  -->
+    <!--机器人每次旋转此距离时都要进行扫描-->
+    <param name="angularUpdate" value="0.25"/><!-- default: 0.05-->
+
+    <param name="temporalUpdate" value="1.0"/><!-- default: 1.0 -->
+    <param name="resampleThreshold" value="0.25"/><!-- default: 0.5 -->
+
+    <!-- Number of particles in the filter. default 30        -->
+    <!--过滤器中的颗粒数。 默认30    -->
+    <param name="particles" value="30"/><!-- default: 10 -->
+
+<!-- Initial map size  -->
+<!--初始地图大小-->
+    <param name="xmin" value="-100.0"/>
+    <param name="ymin" value="-100.0"/>
+    <param name="xmax" value="100.0"/>
+    <param name="ymax" value="100.0"/>
+
+    <!-- Processing parameters (resolution of the map)  -->
+    <!--处理参数（地图分辨率）-->
+    <param name="delta" value="0.05"/><!-- default: 0.02 -->
+
+    <param name="llsamplerange" value="0.01"/>
+    <param name="llsamplestep" value="0.01"/>
+    <param name="lasamplerange" value="0.005"/>
+    <param name="lasamplestep" value="0.005"/>
+
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+ <!-- Rviz -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find racecar_gmapping)/rviz/gmapping.rviz" if="$(arg use_rviz)"/>
+    <!--<node pkg="racecar_control" name="keyboard_teleop_node" type="keyboard_teleop.py" output="screen"/>-->
+    <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />-->
+</launch>
