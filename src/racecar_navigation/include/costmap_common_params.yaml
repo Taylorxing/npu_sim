@@ -1,0 +1,64 @@
+max_obstacle_height: 0.60  # assume something like an arm is mounted on top of the robot
+
+# Obstacle Cost Shaping (http://wiki.ros.org/costmap_2d/hydro/inflation)
+robot_radius: 0.20  # distance a circular robot should be clear of the obstacle (kobuki: 0.18)
+# footprint: [[x0, y0], [x1, y1], ... [xn, yn]]  # if the robot is not circular
+
+map_type: voxel
+
+footprint: [[-0.30, -0.25], [-0.30, 0.25], [0.30, 0.25], [0.30, -0.25]] #车占用面积
+footprint_padding: 0.01
+
+obstacle_layer:
+  enabled:              true
+  max_obstacle_height:  2.0 #0.6
+  origin_z:             0.0
+  z_resolution:         0.2
+  z_voxels:             2
+  unknown_threshold:    15
+  mark_threshold:       0
+  combination_method:   1       # 只能设置为 0 或 1，用来更新地图上的代价值，一般设置为 1
+  track_unknown_space: false   # 设置为 false，地图代价值只分致命碰撞和自由区域;true
+  obstacle_range: 5.0          # 超过该范围的障碍物，并不进行检测 2.5
+  raytrace_range: 6.0          # 实时清除代价地图上障碍物的最大范围，更新可自由移动的空间数据 raytrace_range: 3.0
+  origin_z: 0.0
+  z_resolution: 0.2
+  z_voxels: 2
+  publish_voxel_map: true #false    是否打开障碍层
+  observation_sources:  scan bump
+  scan:
+    data_type: LaserScan
+    topic: scan
+    marking: true                # 是否可以使用该传感器来标记障碍物
+    clearing: true               #true 是否可以使用该传感器来清除障碍物，并标记为自由空间
+    min_obstacle_height: 0.05  #0.25
+    max_obstacle_height: 1.0 #0.35
+  bump:
+    data_type: PointCloud2
+    topic: mobile_base/sensors/bumper_pointcloud
+    marking: true
+    clearing: false
+    min_obstacle_height: 0.0
+    max_obstacle_height: 2.0 #0.15
+  # for debugging only, let's you see the entire voxel grid
+
+
+
+#cost_scaling_factor and inflation_radius were now moved to the inflation_layer ns
+inflation_layer:               # 配置膨胀层（在障碍物外标记一层危险区域，路径规划时需避开该危险区域）
+  enabled: true                # 是否启用该层
+  cost_scaling_factor: 6     # 膨胀比例因子 D: 3  A:6/4
+  inflation_radius: 0.7        # 膨胀半径，膨胀层会把障碍物代价膨胀直到该半径为止，一般将该值设置为机器人底盘的直径大小。 D: 0.7
+  # 计算膨胀代价：exp(-1.0 * cost_scaling_factor * (distance_from_obstacle – inscribed_radius)) 
+  #             * (costmap_2d::INSCRIBED_INFLATED_OBSTACLE – 1)
+  #             
+  # 注意： 1.由于在公式中 cost_scaling_factor 被乘了一个负数，所以增大比例因子反而会降低代价
+  #       2.公式中 costmap_2d::INSCRIBED_INFLATED_OBSTACLE 目前指定为254
+
+static_layer:                  # 静态地图层（SLAM构建的地图）                                                           ？？
+  enabled: true                # 是否启用该层
+  
+
+
+
+ 

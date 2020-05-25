@@ -1,0 +1,9 @@
+
+
+
+NavfnROS:
+    allow_unknown: false        # 是否允许规划器规划穿过未知区域的路径
+    planner_window_x: 20 #0 20 
+    planner_window_y: 20 #0 20
+    default_tolerance: 0.1      # 路径规划器目标点的公差范围 0
+    visualize_potential: false  # 指定是否通过可视化PointCloud2计算的潜在区域

@@ -1,0 +1,41 @@
+<?xml version='1.0'?>
+
+<launch>
+  <arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" />
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find racecar_control)/config/racecar_control.yaml" command="load"/>
+
+  <!-- load the controllers -->
+  <node name="controller_manager" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/racecar" args="left_rear_wheel_velocity_controller right_rear_wheel_velocity_controller
+                                            left_front_wheel_velocity_controller right_front_wheel_velocity_controller
+                                            left_steering_hinge_position_controller right_steering_hinge_position_controller
+                                            joint_state_controller"/>
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <remap from="/joint_states" to="/racecar/joint_states" />
+  </node>
+ 
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen"></node>
+  <!-- servo node -->
+  <node pkg="racecar_control" type="servo_commands.py" name="servo_commands" output="screen">
+    <remap from="/racecar/ackermann_cmd_mux/output" to="/vesc/low_level/ackermann_cmd_mux/output"/>
+  </node>
+
+  <!-- Allow for Gazebo to broadcast odom -->
+  <node pkg="racecar_gazebo" name="gazebo_odometry_node" type="gazebo_odometry.py" output="screen"/>
+  <!--<node pkg="racecar_navigation" name="cmd_vel_to_ackermann_drive" type="cmd_vel_to_ackermann_drive.py" output="screen"/>-->
+  <!--<node pkg="racecar_control" name="keyboard_teleop_node" type="keyboard_teleop.py" output="screen"/>-->
+  <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />-->
+</launch>
+  <!--<arg name="model" />
+  <arg name="gui" default="true" />
+  <arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" />-->
+
+  <!--<param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+  <param name="use_gui" value="$(arg gui)"/>-->
+
+  <!--<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />-->
+  <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />-->

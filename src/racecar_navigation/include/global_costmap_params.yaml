@@ -1,0 +1,12 @@
+global_costmap:
+   global_frame: /map
+   robot_base_frame: /base_link
+   update_frequency: 1.0 #1.0 10
+   publish_frequency: 0.5 #0.5 10
+   static_map: false                   # 需检测附近新增的障碍物，局部代价地图一般不设置为静态地图 true
+   transform_tolerance: 0.5
+   plugins:
+     - {name: static_layer,            type: "costmap_2d::StaticLayer"}
+     - {name: obstacle_layer,          type: "costmap_2d::ObstacleLayer"}   #"costmap_2d::VoxelLayer"
+     - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
+
